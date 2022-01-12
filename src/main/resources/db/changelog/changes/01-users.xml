@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <property name="autoIncrement" value="true"/>
+    <property name="now" value="now()" dbms="h2"/>
+    <property name="now" value="now()" dbms="mysql"/>
+    <property name="floatType" value="float" dbms="mysql, oracle, mssql"/>
+
+    <changeSet id="01-setup-user-management" author="tayyab">
+        <createTable tableName="users">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user_id" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_name" type="varchar(128)"/>
+            <column name="full_name" type="varchar(256)"/>
+            <column name="password" type="varchar(256)"/>
+            <column name="dob" type="datetime" defaultValue="now()"/>
+            <column name="email" type="varchar(128)"/>
+            <column name="phone_no" type="varchar(64)"/>
+            <column name="created_at" type="datetime" defaultValue="now()"/>
+            <column name="updated_at" type="datetime"/>
+        </createTable>
+        <createTable tableName="users_roles">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="users_id" type="bigint"/>
+            <column name="roles_id" type="bigint"/>
+        </createTable>
+        <createTable tableName="roles">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="role" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="roles_privileges">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="roles_id" type="bigint"/>
+            <column name="privileges_id" type="bigint"/>
+        </createTable>
+
+        <createTable tableName="privileges">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="privilege" type="varchar(128)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="02-insert-role-privileges" author="tayyab">
+        <insert tableName="privileges">
+            <column name="privilege" value="CREATE_USER"/>
+        </insert>
+        <insert tableName="privileges">
+            <column name="privilege" value="UPDATE_USER"/>
+        </insert>
+        <insert tableName="privileges">
+            <column name="privilege" value="GET_USER"/>
+        </insert>
+        <insert tableName="privileges">
+            <column name="privilege" value="DELETE_USER"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="role" value="ROLE_USER"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="role" value="ROLE_ADMIN"/>
+        </insert>
+        <insert tableName="roles_privileges">
+            <column name="roles_id" value="1"/>
+            <column name="privileges_id" value="1"/>
+        </insert>
+        <insert tableName="roles_privileges">
+            <column name="roles_id" value="1"/>
+            <column name="privileges_id" value="2"/>
+        </insert>
+        <insert tableName="roles_privileges">
+            <column name="roles_id" value="1"/>
+            <column name="privileges_id" value="3"/>
+        </insert>
+        <insert tableName="roles_privileges">
+            <column name="roles_id" value="2"/>
+            <column name="privileges_id" value="1"/>
+        </insert>
+        <insert tableName="roles_privileges">
+            <column name="roles_id" value="2"/>
+            <column name="privileges_id" value="2"/>
+        </insert>
+        <insert tableName="roles_privileges">
+            <column name="roles_id" value="2"/>
+            <column name="privileges_id" value="3"/>
+        </insert>
+        <insert tableName="roles_privileges">
+            <column name="roles_id" value="2"/>
+            <column name="privileges_id" value="4"/>
+        </insert>
+    </changeSet>
+    <changeSet id="03-insert-admin-user" author="tayyab">
+        <insert tableName="users">
+            <column name="user_id" value="adminuserid"/>
+            <column name="user_name" value="admin"/>
+            <column name="password" value="$2a$12$PdPt7hibq4Xk834nlCtL8ujpB6Ih2xzE8OpTKO59LAsIXYF5QLx0q"/>
+            <!-- password's actual value is admin -->
+        </insert>
+        <insert tableName="users_roles">
+            <column name="users_id" value="1"/>
+            <column name="roles_id" value="2"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
