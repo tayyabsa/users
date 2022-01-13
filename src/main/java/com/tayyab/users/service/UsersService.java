@@ -9,6 +9,8 @@ import com.tayyab.users.entity.UsersEntity;
 import com.tayyab.users.exception.ApplicationException;
 import com.tayyab.users.repository.RolesRepository;
 import com.tayyab.users.repository.UsersRepository;
+import com.tayyab.users.repository.specifications.UsersSpecifications;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,10 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UsersService implements UserDetailsService {
@@ -61,8 +61,8 @@ public class UsersService implements UserDetailsService {
     }
 
     private void validateUsername(String userName) {
-        if(usersRepository.findByUserName(userName).isPresent()){
-            throw new ApplicationException("4000","User name already exits");
+        if (usersRepository.findByUserName(userName).isPresent()) {
+            throw new ApplicationException("4000", "User name already exits");
         }
     }
 
@@ -79,13 +79,12 @@ public class UsersService implements UserDetailsService {
 
     private Set<RoleEntity> getRoles(String role) {
         Set<RoleEntity> roleEntities = new HashSet<>();
-            Optional<RoleEntity> roleEntity = rolesRepository.findByRole(role);
-            if (roleEntity.isPresent()) {
-                roleEntities.add(roleEntity.get());
-            }
+        Optional<RoleEntity> roleEntity = rolesRepository.findByRole(role);
+        if (roleEntity.isPresent()) {
+            roleEntities.add(roleEntity.get());
+        }
         return roleEntities;
     }
-
 
 
     @Override
@@ -95,5 +94,10 @@ public class UsersService implements UserDetailsService {
             throw new UsernameNotFoundException(userName);
         }
         return new UsersPrinciple(usersEntity.get());
+    }
+
+    public List<UserResponseDto> getLongTermUsers() {
+        return usersRepository.findAll(UsersSpecifications.isLongTermUser())
+                .stream().map(UsersService::toUserResponse).collect(Collectors.toList());
     }
 }
